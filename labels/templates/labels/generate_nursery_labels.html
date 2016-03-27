@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block nav-home %}active{% endblock %}
+{% block title %}
+    Generate Nursery Labels
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+    {% if messages %}
+        {% for message in messages %}
+        <li{% if message.tags %} class="bg-{{ message.tags }}"{% endif %}>
+            {{ message }}
+        </li>
+        {% endfor %}
+    {% endif %}
+    <h1>Nursery Label Generator</h1>
+    <form method="post">
+    {% csrf_token %}
+        <div class="form-group">
+            <label for="species">Species</label>
+            <select id="species" name="species" class="form-control" data-bind="options:species,
+            selectedOptions:selectedSpecies,optionsText:'name',optionsValue:'id'">
+            </select>
+            {% for type in species %}
+                <span hidden="hidden" data-bind="text:addSpecies('{{type.id}}', '{{type.name}}')"></span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="cultivars">Cultivar</label>
+            <select id="cultivars" name="cultivars" class="form-control" data-bind="options:cultivars,
+            selectedOptions:selectedCultivar, optionsText:'name', optionsValue:'id'">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="rootstocks">Rootstocks</label>
+            <select id="rootstocks" name="rootstocks" class="form-control" data-bind="options:rootstocks,
+            selectedOptions:selectedRootstock, optionsText:'name', optionsValue:'id'">
+            </select>
+        </div>
+        <input type="submit" name="submit" value="FrontCSV" class="btn btn-primary btn-lg" id="submit-id-submit"
+               onclick="onSubmit()">
+        <input type="submit" name="submit-another" value="BackCSV" class="btn btn-primary btn-lg"
+               onclick="onSubmit()">
+        </form>
+    </div>
+{% endblock %}
+{% block footer %}
+    <script type="text/javascript" src="/static/js/easy_rest_data.js"></script>
+    <script type="application/javascript" src="/static/js/label_view_models.js"></script>
+    <script type="application/javascript">
+        $(document).ready(function() {
+            var vm = new bbfan.LabelGeneratorViewModel();
+            ko.applyBindings(vm);
+        })
+    </script>
+{% endblock %}
+
