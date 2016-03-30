@@ -1,14 +1,13 @@
 from django.shortcuts import render
 from rest_framework import routers, viewsets, filters, status
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse, HttpResponse
 from django.views.generic import TemplateView, View
 from django.forms.models import model_to_dict
 from core import models as CoreModels
 from core import serializers as CoreSerializers
 
 
-# Create your views here.
 
 class HomeView(TemplateView):
     template_name = 'home.html'

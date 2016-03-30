@@ -102,11 +102,11 @@
 
   LabelEntry = (function() {
     function LabelEntry(species, cultivar, rootstock, startingCount) {
-      bbfan.SelectableMixin(this);
       this.species = species;
       this.cultivar = cultivar;
       this.rootstock = rootstock;
       this.count = startingCount;
+      this.fullLabelName = '' + this.count + 'x ' + this.species.name + ' - ' + this.cultivar.name + ' on ' + this.rootstock.name + ' rootstock';
       this.incrementCount = (function(_this) {
         return function() {
           return _this.count += 1;
@@ -149,10 +149,15 @@
       this.cultivars = ko.observableArray();
       this.rootstocks = ko.observableArray();
       this.labelEntries = ko.observableArray();
+      this.count = ko.observable();
+      this.speciesIDToIndex = {};
+      this.cultivarIDToIndex = {};
+      this.rootstockIDToIndex = {};
       this.selectedSpecies = ko.observable();
       this.selectedCultivar = ko.observable();
-      this.selectedLabelEntry = ko.observable();
+      this.selectedLabel = ko.observable();
       this.selectedRootstock = ko.observable();
+      this.shouldShowRemoveLabelButton = false;
       this.addSpecies = (function(_this) {
         return function(id, name) {
           return _this.species.push(new IDNameViewModel(id, name));
@@ -163,23 +168,76 @@
           return _this.cultivars.push(new IDNameViewModel(id, name));
         };
       })(this);
+      this.selectedLabel.subscribe = ((function(_this) {
+        return function(newValue) {
+          if (!newValue) {
+            return _this.shouldShowRemoveLabelButton = false;
+          } else {
+            return _this.shouldShowRemoveLabelButton = true;
+          }
+        };
+      })(this));
+      this.removeLabel = (function(_this) {
+        return function() {
+          var selectedSpecies, species, speciesID;
+          _this.selectedLabel = null;
+          speciesID = _this.selectedSpecies()[0];
+          selectedSpecies = null;
+          return species = _this.get_by_id(_this.species(), _this.selectedSpecies()[0]);
+        };
+      })(this);
+      this.get_by_id = (function(_this) {
+        return function(dict, id) {
+          var found, i, len, obj;
+          found = null;
+          for (i = 0, len = dict.length; i < len; i++) {
+            obj = dict[i];
+            if (obj.id === id) {
+              found = obj;
+              break;
+            }
+          }
+          return found;
+        };
+      })(this);
+      this.addLabel = (function(_this) {
+        return function() {
+          var cultivar, label, rootstock, selectedSpecies, species, speciesID;
+          speciesID = _this.selectedSpecies()[0];
+          selectedSpecies = null;
+          species = _this.get_by_id(_this.species(), _this.selectedSpecies()[0]);
+          cultivar = _this.get_by_id(_this.cultivars(), _this.selectedCultivar()[0]);
+          rootstock = _this.get_by_id(_this.rootstocks(), _this.selectedRootstock()[0]);
+          label = new LabelEntry(species, cultivar, rootstock, _this.count());
+          return _this.labelEntries.push(label);
+        };
+      })(this);
       this.selectedSpecies.subscribe((function(_this) {
         return function(idArray) {
           var posID, url;
           posID = idArray[0];
           url = _cultivarsURL + posID;
           _easyData.getManyResults(url, function(objs) {
+            var index;
             _this.cultivars.removeAll();
+            _this.cultivarIDToIndex = {};
+            index = 0;
             return _.each(objs, function(obj) {
-              return _this.cultivars.push(new IDNameViewModel(obj.id, obj.name));
+              _this.cultivars.push(new IDNameViewModel(obj.id, obj.name));
+              _this.cultivarIDToIndex[obj.id] = index;
+              return index += 1;
             });
           });
           url = _rootstocksURL + posID;
-          console.log(url);
           return _easyData.getManyResults(url, function(objs) {
+            var index;
             _this.rootstocks.removeAll();
+            _this.rootstockIDToIndex = {};
+            index = 0;
             return _.each(objs, function(obj) {
-              return _this.rootstocks.push(new IDNameViewModel(obj.id, obj.name));
+              _this.rootstocks.push(new IDNameViewModel(obj.id, obj.name));
+              _this.rootstockIDToIndex[obj.id] = index;
+              return index += 1;
             });
           });
         };

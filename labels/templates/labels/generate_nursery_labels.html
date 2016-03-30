@@ -15,42 +15,53 @@
         {% endfor %}
     {% endif %}
     <h1>Nursery Label Generator</h1>
+    <p>Generates nursery labels for printing and attaching to grafted nursery stock. An order must have been
+        generated to print labels.</p>
     <form method="post">
-    {% csrf_token %}
+        {% csrf_token %}
         <div class="form-group">
-            <label for="species">Species</label>
-            <select id="species" name="species" class="form-control" data-bind="options:species,
-            selectedOptions:selectedSpecies,optionsText:'name',optionsValue:'id'">
+            <label for="order">Select Order</label>
+            <select id="order" name="order" class="form-control" data-bind="options:orders,
+                    selectedOptions:selectedOrder,optionsText:'name',optionsValue:'id'">
             </select>
-            {% for type in species %}
-                <span hidden="hidden" data-bind="text:addSpecies('{{type.id}}', '{{type.name}}')"></span>
+            {% for order in orders %}
+                <span hidden="hidden" data-bind="text:addOrder('{{ order.id }}', '{{ order }}')"></span>
             {% endfor %}
         </div>
-        <div class="form-group">
-            <label for="cultivars">Cultivar</label>
-            <select id="cultivars" name="cultivars" class="form-control" data-bind="options:cultivars,
-            selectedOptions:selectedCultivar, optionsText:'name', optionsValue:'id'">
-            </select>
+        <table class="table table-striped label-table">
+            <thead>
+            <tr>
+                <th>Species</th>
+                <th>Cultivar</th>
+                <th>Rootstock</th>
+                <th>Count</th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: entries">
+            <tr>
+                <td class="filterable-cell" data-bind="text: species"></td>
+                <td class="filterable-cell" data-bind="text: cultivar"></td>
+                <td class="filterable-cell" data-bind="text: rootstock"></td>
+                <td class="filterable-cell" data-bind="text: count"></td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="submit" name="submit" value="Generate" class="btn btn-primary btn-lg" id="submit-id-submit">
+        <div {{ hidden_tag }}>
+            <h2>Download Labels</h2>
+            <div>
+                <a class="btn btn-default" href="{{ frontLink }}">Front CSV</a>
+                <a class="btn btn-default" href="{{ backLink }}">Back CSV</a>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="rootstocks">Rootstocks</label>
-            <select id="rootstocks" name="rootstocks" class="form-control" data-bind="options:rootstocks,
-            selectedOptions:selectedRootstock, optionsText:'name', optionsValue:'id'">
-            </select>
-        </div>
-        <input type="submit" name="submit" value="FrontCSV" class="btn btn-primary btn-lg" id="submit-id-submit"
-               onclick="onSubmit()">
-        <input type="submit" name="submit-another" value="BackCSV" class="btn btn-primary btn-lg"
-               onclick="onSubmit()">
-        </form>
-    </div>
+    </form>
 {% endblock %}
 {% block footer %}
     <script type="text/javascript" src="/static/js/easy_rest_data.js"></script>
-    <script type="application/javascript" src="/static/js/label_view_models.js"></script>
+    <script type="application/javascript" src="/static/js/generator_view_model.js"></script>
     <script type="application/javascript">
         $(document).ready(function() {
-            var vm = new bbfan.LabelGeneratorViewModel();
+            var vm = new bbfan.GeneratorViewModel();
             ko.applyBindings(vm);
         })
     </script>

@@ -69,11 +69,13 @@ class RootstockSelectionViewModel
 class LabelEntry
 
   constructor:(species, cultivar, rootstock, startingCount)->
-    bbfan.SelectableMixin(@)
     @species = species;
     @cultivar = cultivar;
     @rootstock = rootstock;
     @count = startingCount;
+
+    @fullLabelName = '' + @count + 'x ' + @species.name + ' - ' + @cultivar.name + ' on ' + @rootstock.name + ' rootstock'
+
 
     @incrementCount = () =>
       @count += 1;
@@ -100,27 +102,76 @@ class LabelGeneratorViewModel
     @rootstocks = ko.observableArray();
     @labelEntries = ko.observableArray();
 
+    @count = ko.observable()
+    @speciesIDToIndex = {}
+    @cultivarIDToIndex = {}
+    @rootstockIDToIndex = {}
     @selectedSpecies = ko.observable();
     @selectedCultivar = ko.observable();
-    @selectedLabelEntry = ko.observable()
+    @selectedLabel = ko.observable()
     @selectedRootstock = ko.observable()
+    @shouldShowRemoveLabelButton = false
 
     @addSpecies = (id, name)=> @species.push(new IDNameViewModel(id, name))
     @addCultivar = (id, name)=> @cultivars.push(new IDNameViewModel(id, name))
+
+    @selectedLabel.subscribe = ((newValue)=>
+      if not newValue
+        @shouldShowRemoveLabelButton = false
+      else
+        @shouldShowRemoveLabelButton = true
+    )
+
+    @removeLabel = ()=>
+      @selectedLabel = null
+      speciesID = @selectedSpecies()[0]
+      selectedSpecies = null
+      species = @get_by_id(@species(), @selectedSpecies()[0])
+
+    @get_by_id = (dict, id)=>
+      found = null
+      for obj in dict
+        if obj.id == id
+          found = obj
+          break
+      return found
+
+
+
+    @addLabel = ()=>
+      speciesID = @selectedSpecies()[0]
+      selectedSpecies = null
+      species = @get_by_id(@species(), @selectedSpecies()[0])
+      cultivar = @get_by_id(@cultivars(), @selectedCultivar()[0])
+      rootstock = @get_by_id(@rootstocks(), @selectedRootstock()[0])
+      label = new LabelEntry(species, cultivar, rootstock, @count())
+      @labelEntries.push(label)
+
 
     @selectedSpecies.subscribe((idArray)=>
       posID = idArray[0]
       url = _cultivarsURL + posID
       _easyData.getManyResults(url, (objs)=>
         @cultivars.removeAll()
-        _.each(objs,(obj)=> @cultivars.push(new IDNameViewModel(obj.id, obj.name)))
+        @cultivarIDToIndex = {}
+        index = 0
+        _.each(objs,(obj)=>
+          @cultivars.push(new IDNameViewModel(obj.id, obj.name))
+          @cultivarIDToIndex[obj.id] = index
+          index += 1
+        )
       )
 
       url = _rootstocksURL + posID
-      console.log(url)
       _easyData.getManyResults(url, (objs)=>
         @rootstocks.removeAll()
-        _.each(objs,(obj)=> @rootstocks.push(new IDNameViewModel(obj.id, obj.name)))
+        @rootstockIDToIndex = {}
+        index = 0
+        _.each(objs,(obj)=>
+          @rootstocks.push(new IDNameViewModel(obj.id, obj.name))
+          @rootstockIDToIndex[obj.id] = index
+          index += 1
+        )
       )
     )
 

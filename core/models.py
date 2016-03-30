@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from core.common import STATE_FULL_TO_AB
 
 MONTH_CHOICES = (
     ('Jan', 'January'),
@@ -23,7 +24,7 @@ DWARFING_CHOICES = (
 )
 
 def get_fields(obj_type):
-    f = tuple([f for f in obj_type._meta.get_all_field_names()])
+    f = tuple([f for f in obj_type._meta.get_fields()])
     return f
 
 
@@ -42,6 +43,14 @@ class Location(BaseModel):
     latitude = models.CharField(max_length=255, blank=False, null=True)
     longitude = models.CharField(max_length=255, blank=False, null=True)
 
+    def __str__(self):
+        if self.center and self.state:
+            abbrevState = STATE_FULL_TO_AB[self.state]
+            return '{0}, {1}'.format(self.center, abbrevState)
+        if self.state:
+            return self.state
+        return self.country
+
     class Meta:
         unique_together = ('center', 'state', 'country')
 
@@ -56,6 +65,7 @@ class Species(BaseModel):
 class Rootstock(BaseModel):
     species = models.ForeignKey(Species)
     name = models.CharField(max_length=255)
+    min_width = models.PositiveIntegerField()
     max_height = models.PositiveIntegerField()
     max_width = models.PositiveIntegerField()
     dwarfing = models.CharField(max_length=2, choices=DWARFING_CHOICES)
@@ -111,7 +121,7 @@ class Pot(BaseModel):
     volume = models.PositiveIntegerField(blank=True, null=True)
 
 
-class GraftedTree(BaseModel):
+class GraftedStock(BaseModel):
     scion = models.ForeignKey(Cultivar)
     rootstock = models.ForeignKey(Rootstock)
     on_hand = models.PositiveIntegerField()
