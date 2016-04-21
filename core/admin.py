@@ -14,4 +14,7 @@ admin.site.register(CoreModels.ScionSource)
 admin.site.register(CoreModels.SeedlingInfo)
 admin.site.register(CoreModels.SeedlingTree)
 admin.site.register(CoreModels.Species)
+admin.site.register(CoreModels.Address)
+admin.site.register(CoreModels.Customer)
+admin.site.register(CoreModels.Order)
 

@@ -23,7 +23,7 @@
   GeneratorViewModel = (function() {
     var __labelURL;
 
-    __labelURL = '/labels/order/';
+    __labelURL = '/nursery/entries/order/';
 
     function GeneratorViewModel() {
       this.orders = ko.observableArray();

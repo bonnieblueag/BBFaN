@@ -1,8 +1,9 @@
 import os
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from labels.csv_generator import CSVGenerator
 import labels.models as LabelModels
 from django.conf import settings
@@ -21,6 +22,12 @@ def get_label_entries_for_order(request, orderID):
         }
         data['entries'].append(singleData)
     return JsonResponse(data)
+
+
+@login_required
+def build_label_order(request):
+    url = reverse("admin:labels_nurserylabelorder_add")
+    return HttpResponseRedirect(url)
 
 
 

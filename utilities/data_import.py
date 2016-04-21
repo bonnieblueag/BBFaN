@@ -1,5 +1,76 @@
+import core.models as CoreModels
 from core.models import Cultivar, Species, Location, FruitUse
 import csv
+
+
+class InventoryImport:
+
+    def import_inventory(self, fileName):
+        entriesAdded = 0
+        with open(fileName) as inFile:
+            reader = csv.reader(inFile, delimiter=',', quotechar='"')
+            first = True
+            typeToSpecies = {}
+            for row in reader:
+                if first:
+                    first = False
+                    print('Skipping header')
+                    continue
+                type = row[0]
+                name = row[1]
+                seedling = row[2]
+                m111 = row[3]
+                g11 = row[4]
+                g222 = row[5]
+                if type not in typeToSpecies:
+                    species = CoreModels.Species.objects.filter(name=type).first()
+                    typeToSpecies[type] = species
+                species = typeToSpecies[type]
+
+                cultivar = CoreModels.Cultivar.objects.filter(species__id=species.id, name=name).first()
+                if not cultivar:
+                    raise Exception('Could not find cultivar with Type: {0}, Name:{1}}'.format(type, name))
+
+                if seedling != '':
+                    if species.name == 'Apple':
+                        self.__insert(species, cultivar, 'Seedling', int(seedling))
+                    else:
+                        self.__insert(species, cultivar, 'Callery', int(seedling))
+                if m111 != '':
+                    if species.name == 'Apple':
+                        self.__insert(species, cultivar, 'M-111', int(m111))
+                    else:
+                        self.__insert(species, cultivar, 'OHx333', int(m111))
+                if g11 != '':
+                    self.__insert(species, cultivar, 'G-11', int(g11))
+                if g222 != '':
+                    self.__insert(species, cultivar, 'G-222', int(g222))
+
+
+
+
+
+
+    def __insert(self, species, cultivar, rootstockName, count):
+        rootstock = CoreModels.Rootstock.objects.filter(species__id=species.id, name=rootstockName).first()
+        if not rootstock:
+            raise Exception('Rootstock with name {0} does not exist.'.format(rootstockName))
+        graftedStock = CoreModels.GraftedStock.objects.filter(scion__id=cultivar.id,
+                                                                  rootstock__id=rootstock.id).first()
+        print('Inserting {0} {1}'.format(cultivar.name, rootstockName))
+        if not graftedStock:
+            graftedStock = CoreModels.GraftedStock()
+            graftedStock.scion = cultivar
+            graftedStock.rootstock = rootstock
+            graftedStock.on_hand = 0
+            graftedStock.name_denormalized = '{0} {1}'.format(cultivar.name, rootstockName)
+            graftedStock.save()
+        graftedStock.on_hand = count
+        graftedStock.save()
+        return
+
+
+
 
 class LegacyScionImport:
 

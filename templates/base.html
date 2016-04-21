@@ -15,18 +15,16 @@
 <nav>
     <ul class="nav nav-pills navbar-default">
         <li role="presentation" class="{% block nav-home %}{% endblock %}"><a href="/">Home</a></li>
-        <li role="presentation" class="dropdown {% block nav-add %}{% endblock %}">
+        <li role="presentation" class="dropdown {% block nav-nursery%}{% endblock %}">
             <a class="dropdown-toggle " data-toggle="dropdown"
                role="button"
                aria-expanded="false">
                 Nursery <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" role="menu">
-                {% comment %}
                 <li role="presentation">
                     <a href="{% url "build_label_order" %}">Build Label Order</a>
                 </li>
-                {% endcomment %}
                 <li role="presentation">
                     <a href="{% url "generate_nursery_labels" %}">Generate Labels</a>
                 </li>

@@ -36,12 +36,39 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+class Address(BaseModel):
+    street_address = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    zipcode = models.CharField(max_length=5)
+
+
+class Customer(BaseModel):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=10, blank=True, null=True)
+    address = models.ForeignKey(Address, null=True, blank=True)
+
+    def __str__(self):
+        return '{0} {1}'.format(self.first_name, self.last_name)
+
+class Order(BaseModel):
+    customer = models.ForeignKey(Customer)
+    customer_name = models.CharField(max_length=255)
+    order_placed_date = models.DateTimeField(blank=True, null=True)
+    order_fullfilled_date = models.DateTimeField(blank=True, null=True)
+    order_shipped_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return '{0} {1}'.format(self.id, self.customer_name)
+
+
 class Location(BaseModel):
-    center = models.CharField(max_length=255, blank=False, null=True)
-    state = models.CharField(max_length=255, blank=False, null=True)
-    country = models.CharField(max_length=255, blank=False, null=True)
-    latitude = models.CharField(max_length=255, blank=False, null=True)
-    longitude = models.CharField(max_length=255, blank=False, null=True)
+    center = models.CharField(max_length=255, blank=True, null=True)
+    state = models.CharField(max_length=255, blank=True, null=True)
+    country = models.CharField(max_length=255)
+    latitude = models.CharField(max_length=255, blank=True, null=True)
+    longitude = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         if self.center and self.state:
@@ -92,27 +119,34 @@ class ScionSource(BaseModel):
 class FruitUse(BaseModel):
     use = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.use
+
 
 class Cultivar(BaseModel):
-    sources = models.ManyToManyField(ScionSource)
+    sources = models.ManyToManyField(ScionSource, blank=True, null=True)
     species = models.ForeignKey(Species, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     ripens = models.CharField(max_length=255)
     origin = models.ForeignKey(Location, on_delete=models.PROTECT)
-    origin_date = models.CharField(max_length=255)
-    uses = models.ManyToManyField(FruitUse)
+    origin_date = models.CharField(max_length=255, blank=True, null=True, default='Unknown')
+    uses = models.ManyToManyField(FruitUse, blank=True, null=True)
     is_pollen_sterile = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('species', 'name')
+        ordering = ('name',)
 
     def __str__(self):
-        return '{0}-{1}'.format(self.species.name, self.name)
+        return self.name
 
 
 class Scion(BaseModel):
     cultivar = models.ForeignKey(Cultivar, on_delete=models.PROTECT)
     on_hand = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.cultivar.name
 
 
 class Pot(BaseModel):
@@ -120,12 +154,22 @@ class Pot(BaseModel):
     on_hand = models.PositiveIntegerField()
     volume = models.PositiveIntegerField(blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class GraftedStock(BaseModel):
     scion = models.ForeignKey(Cultivar)
     rootstock = models.ForeignKey(Rootstock)
     on_hand = models.PositiveIntegerField()
-    pot = models.ForeignKey(Pot)
+    pot = models.ForeignKey(Pot, null=True, blank=True)
+    name_denormalized = models.CharField(max_length=255)
+
+    class Meta:
+        ordering = ('name_denormalized',)
+
+    def __str__(self):
+        return self.name_denormalized
 
 
 class SeedlingInfo(BaseModel):
@@ -136,11 +180,19 @@ class SeedlingInfo(BaseModel):
     class Meta:
         unique_together = ('species', 'name')
 
+    def __str__(self):
+        return self.name
+
+
 
 class SeedlingTree(BaseModel):
     info = models.ForeignKey(SeedlingInfo)
     min_size = models.PositiveIntegerField()
     max_size = models.PositiveIntegerField()
     on_hand = models.PositiveIntegerField()
+    name_denormalized = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name_denormalized
 
 

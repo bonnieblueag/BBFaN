@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import dj_database_url
+from django.contrib import messages
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,15 +30,19 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = (
+    'bootstrap3',
+    'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'rest_framework',
     'core',
     'labels',
+    'market',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -53,11 +58,11 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'bbfan.urls'
 
+
 TEMPLATES = (
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR + '/templates', ],
-        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -65,6 +70,12 @@ TEMPLATES = (
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'loaders':  [
+                ('django.template.loaders.cached.Loader',(
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                ))
+                ],
             'debug': DEBUG,
         },
     },
@@ -78,7 +89,7 @@ WSGI_APPLICATION = 'bbfan.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'development',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
@@ -86,6 +97,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = (
     {
@@ -139,3 +151,14 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+MESSAGE_TAGS = {
+            messages.SUCCESS: 'alert-success success',
+            messages.WARNING: 'alert-warning warning',
+            messages.ERROR: 'alert-danger error'
+}
+
+DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
+
+LOGIN_URL = '/api-auth/login'
+LOGIN_REDIRECT_URL = '/'

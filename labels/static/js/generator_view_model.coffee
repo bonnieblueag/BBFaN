@@ -9,7 +9,7 @@ class LabelEntryViewModel
 
 
 class GeneratorViewModel
-  __labelURL = '/labels/order/'
+  __labelURL = '/nursery/entries/order/'
 
   constructor: ->
     @orders = ko.observableArray()
