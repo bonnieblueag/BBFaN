@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'core',
     'labels',
     'market',
+    'receipts',
 )
 
 MIDDLEWARE_CLASSES = (
