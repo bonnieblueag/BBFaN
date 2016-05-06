@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
+    #'debug_toolbar',
     'rest_framework',
     'core',
     'labels',
@@ -163,3 +163,5 @@ DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer
 
 LOGIN_URL = '/api-auth/login'
 LOGIN_REDIRECT_URL = '/'
+
+RECEIPTS_MAIN_FOLDER = '//CLOUDSTORAGE/Public/Dropbox/bonnie_blue_farms/accounts/receipts'

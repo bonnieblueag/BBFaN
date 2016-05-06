@@ -30,6 +30,18 @@
                 </li>
             </ul>
         </li>
+        <li role="presentation" class="dropdown {% block nav-office%}{% endblock %}">
+            <a class="dropdown-toggle " data-toggle="dropdown"
+               role="button"
+               aria-expanded="false">
+                Office <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+                <li role="presentation">
+                    <a href="{% url "add_receipts" %}">Receipts</a>
+                </li>
+            </ul>
+        </li>
         <!--<ul class="nav navbar-nav pull-right">-->
         <li role="presentation" class="pull-right">
         <ul class="nav" id="login-dropdown" >

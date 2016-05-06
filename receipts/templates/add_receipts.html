@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block nav-office %}active{% endblock %}
+
+{% block body %}
+        <div id="left-pane">
+            <span>Insert</span>
+        </div>
+        <div id="right-pane">
+        <img src="\\CloudStorage\Public\full_logo.jpg">
+        <img data-bind="attr: { src: preview_image_path">
+        </div>
+{% endblock %}
+{% block footer %}
+    <script>
+        $(document).ready(function() {
+            mainDirectory = "{{ receipts_directory }}";
+            var vm = new bbfan.ReceiptsAppVM(mainDirectory);
+            ko.applyBindings(vm);
+        })
+    </script>
+{% endblock %}

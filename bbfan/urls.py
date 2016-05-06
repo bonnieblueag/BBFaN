@@ -5,6 +5,7 @@ from django.contrib import admin
 from core import urls as CoreUrls
 from core import views as CoreViews
 from labels.urls import urls as LabelUrls
+from receipts.urls import urls as ReceiptUrls
 
 router = CoreUrls.router
 
@@ -18,6 +19,7 @@ urlpatterns = [
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += LabelUrls
+urlpatterns += ReceiptUrls
 
 urlpatterns += [
     url(r'^api/', include(router.urls), name='api'),
