@@ -16,7 +16,7 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', CoreViews.HomeView.as_view(), name='home'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
 
 urlpatterns += LabelUrls
 urlpatterns += ReceiptUrls

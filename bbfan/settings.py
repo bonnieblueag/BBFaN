@@ -25,7 +25,8 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = "1zl7q1363xth9+yhpwv8e*s*cc7y-3zca)5-561-r_mmo2ystf"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = False
 
 # Application definition
 
@@ -38,12 +39,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'debug_toolbar',
     'rest_framework',
     'core',
     'labels',
     'market',
     'receipts',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,6 +56,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'bbfan.urls'
@@ -89,6 +91,16 @@ WSGI_APPLICATION = 'bbfan.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
+'default':{
+'ENGINE': 'mysql.connector.django',
+'USER': 'bbdatamaster',
+'PASSWORD': '135BBData!%$',
+'PORT': 3306,
+'HOST': 'bonniebluedata.crwxvbs3bhus.us-east-1.rds.amazonaws.com',
+'NAME': 'bbdata'
+}
+}
+"""
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'development',
@@ -97,7 +109,7 @@ DATABASES = {
         'HOST': 'OFFICE-PC',
         'PORT': '5432',
     }
-}
+"""
 
 
 AUTH_PASSWORD_VALIDATORS = (
@@ -137,7 +149,7 @@ ALLOWED_HOSTS = ['*']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
@@ -165,3 +177,16 @@ LOGIN_URL = '/api-auth/login'
 LOGIN_REDIRECT_URL = '/'
 
 RECEIPTS_MAIN_FOLDER = '//CLOUDSTORAGE/Public/Dropbox/bonnie_blue_farms/accounts/receipts'
+
+"""
+
+INTERNAL_IPS = ['127.0.0.1','0.0.0.0', '192.168.0.110']
+
+def show_toolbar(request):
+    print('Inside')
+    return True
+
+DEBUG_TOOLBAR_CONFIG = {
+'SHOW_TOOLBAR_CALLBACK': show_toolbar,
+}
+"""
